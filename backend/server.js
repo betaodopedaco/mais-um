@@ -1,59 +1,33 @@
 const express = require('express');
 const cors = require('cors');
 const { OpenAI } = require('openai');
-require('dotenv').config();
 
 const app = express();
-const port = process.env.PORT || 3001;
+app.use(cors());
+app.use(express.json());
 
-// Configuração OpenAI
+// SUA CHAVE OPENAI VAI AQUI (vamos configurar depois)
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: process.env.OPENAI_API_KEY || 'sua_chave_aqui'
 });
 
-app.use(cors());
-app.use(express.json({ limit: '10mb' }));
-
-// Rota de tradução
 app.post('/api/translate', async (req, res) => {
   try {
-    const { text, sourceLang, targetLang, context = '' } = req.body;
+    const { text, sourceLang, targetLang } = req.body;
+    
+    console.log('📨 Recebendo tradução:', { sourceLang, targetLang, textLength: text.length });
 
-    if (!text) {
-      return res.status(400).json({ error: 'Texto não fornecido' });
-    }
-
-    const sourceLangName = getLanguageName(sourceLang);
-    const targetLangName = getLanguageName(targetLang);
-
-    const prompt = `
-Você é um tradutor profissional especializado em tradução de documentos.
-
-CONTEXTO ANTERIOR (para manter consistência):
-${context}
-
-TEXTO ORIGINAL (${sourceLangName}):
-${text}
-
-INSTRUÇÕES:
-1. Traduza fielmente do ${sourceLangName} para ${targetLangName}
-2. Mantenha termos técnicos, nomes próprios e formatação
-3. Use linguagem natural e fluida
-4. Preserve o significado original
-5. Mantenha consistência com o contexto fornecido
-
-TRADUÇÃO (${targetLangName}):
-`.trim();
+    const prompt = `Traduza este texto do ${sourceLang} para ${targetLang} de forma natural e precisa:\n\n${text}`;
 
     const completion = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
       messages: [
         {
           role: "system",
-          content: "Você é um tradutor profissional especializado em tradução precisa e contextual de documentos."
+          content: "Você é um tradutor profissional. Traduza de forma natural e precisa."
         },
         {
-          role: "user",
+          role: "user", 
           content: prompt
         }
       ],
@@ -61,32 +35,29 @@ TRADUÇÃO (${targetLangName}):
       max_tokens: 2000
     });
 
-    const translatedText = completion.choices[0]?.message?.content?.trim() || '[Tradução não disponível]';
-
-    res.json({ translatedText });
+    const translatedText = completion.choices[0]?.message?.content?.trim();
+    
+    console.log('✅ Tradução concluída');
+    res.json({ 
+      success: true,
+      translatedText 
+    });
 
   } catch (error) {
-    console.error('Erro na tradução:', error);
-    res.status(500).json({ error: 'Erro interno do servidor' });
+    console.error('❌ Erro:', error);
+    res.status(500).json({ 
+      success: false,
+      error: 'Erro na tradução: ' + error.message 
+    });
   }
 });
 
-function getLanguageName(code) {
-  const languages = {
-    'en': 'Inglês',
-    'es': 'Espanhol', 
-    'fr': 'Francês',
-    'de': 'Alemão',
-    'it': 'Italiano',
-    'pt': 'Português',
-    'ja': 'Japonês',
-    'ko': 'Coreano',
-    'zh': 'Chinês',
-    'ru': 'Russo'
-  };
-  return languages[code] || code;
-}
+// Rota de teste
+app.get('/api/test', (req, res) => {
+  res.json({ message: '🚀 Backend funcionando!', status: 'online' });
+});
 
-app.listen(port, () => {
-  console.log(`🚀 Servidor rodando na porta ${port}`);
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => {
+  console.log(`🎯 Backend rodando na porta ${PORT}`);
 });
