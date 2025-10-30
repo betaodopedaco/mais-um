@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tradutor IA - Funciona Porra!</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>🚀 Tradutor IA</h1>
+            <p>Traduza documentos com IA - AGORA FUNCIONANDO!</p>
+        </header>
+
+        <!-- Upload Section -->
+        <div class="upload-section">
+            <div class="language-selectors">
+                <div class="language-selector">
+                    <label>🌍 Idioma de Origem</label>
+                    <select id="source-lang">
+                        <option value="en">Inglês</option>
+                        <option value="es">Espanhol</option>
+                        <option value="fr">Francês</option>
+                        <option value="de">Alemão</option>
+                        <option value="pt">Português</option>
+                    </select>
+                </div>
+                
+                <div class="language-selector">
+                    <label>🌍 Idioma de Destino</label>
+                    <select id="target-lang">
+                        <option value="pt">Português</option>
+                        <option value="en">Inglês</option>
+                        <option value="es">Espanhol</option>
+                        <option value="fr">Francês</option>
+                        <option value="de">Alemão</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- File Upload -->
+            <div class="file-upload-area" id="drop-zone">
+                <input type="file" id="file-input" accept=".txt,.pdf,.docx" hidden>
+                <div class="upload-icon">📁</div>
+                <p id="file-name">Arraste ou clique para selecionar arquivo</p>
+                <p class="file-info">TXT, PDF ou DOCX • Máx. 10MB</p>
+                <button onclick="document.getElementById('file-input').click()" class="select-btn">
+                    Selecionar Arquivo
+                </button>
+            </div>
+
+            <button id="translate-btn" class="translate-btn" onclick="translateDocument()">
+                🚀 Traduzir Documento
+            </button>
+        </div>
+
+        <!-- Results -->
+        <div id="results" class="results hidden">
+            <div class="results-header">
+                <div>
+                    <h2>Tradução Concluída 🎉</h2>
+                    <p id="file-info"></p>
+                </div>
+                <button id="download-btn" class="download-btn" onclick="downloadTranslation()">
+                    📥 Download Completo
+                </button>
+            </div>
+
+            <!-- Page Navigation -->
+            <div class="page-navigation">
+                <button id="prev-btn" onclick="changePage(-1)">← Anterior</button>
+                <span id="page-indicator">Página 1 de 1</span>
+                <button id="next-btn" onclick="changePage(1)">Próxima →</button>
+            </div>
+
+            <!-- Content -->
+            <div class="content-area">
+                <div class="text-panel">
+                    <h3>📝 Texto Original</h3>
+                    <div id="original-text" class="text-display">
+                        O texto original aparecerá aqui...
+                    </div>
+                </div>
+                
+                <div class="text-panel">
+                    <h3>📝 Texto Traduzido</h3>
+                    <div id="translated-text" class="text-display">
+                        A tradução aparecerá aqui...
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading -->
+        <div id="loading" class="loading hidden">
+            <div class="spinner"></div>
+            <p>Traduzindo com IA...</p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
